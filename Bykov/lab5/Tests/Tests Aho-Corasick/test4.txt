@@ -1,0 +1,6 @@
+ACGTNA
+4 
+ACG 
+CGT 
+GTN
+TNA
