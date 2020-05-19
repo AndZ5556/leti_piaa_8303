@@ -33,7 +33,7 @@ private:
 	string text; // строка поиска
 	vector<BohrPoint> bohr;  // бор
 public:
-	Bohr() // создание бора
+	void init() // создание бора
 	{
 		cout << "Creating bohr\n";
 		bohr.push_back({ {-1, -1, -1, -1, -1}, false, 0, 0, -1, {-1, -1, -1, -1, -1}, -1, -1 }); // добавляем корневую вершину
@@ -254,6 +254,7 @@ public:
 int main()
 {
 	Bohr bor;
+	bor.init();
 	bor.AHO_COR();
 	return 0;
 }

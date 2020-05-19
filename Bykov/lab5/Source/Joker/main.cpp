@@ -12,31 +12,31 @@ private:
 
 	struct Numbers
 	{
-		int index; // индекс в тексте
-		int patternNum; // индекс в строке паттерна
+		int index; // РёРЅРґРµРєСЃ РІ С‚РµРєСЃС‚Рµ
+		int patternNum; // РёРЅРґРµРєСЃ РІ СЃС‚СЂРѕРєРµ РїР°С‚С‚РµСЂРЅР°
 	};
 
 	struct BohrPoint
 	{
-		int directLinks[5]; // переходы в боре
-		int patternNum[40]; // номер паттерна
-		int suffixLink;// суффиксная ссылка
-		int charrLink[5]; // переходы в автомате
-		int parentIndex; // индекс вершины родителя
-		int compressedLink; // переход по конечной ссылке
-		bool terminal; // является ли вершина конечной
-		char charr; // символ перехода от родителя
+		int directLinks[5]; // РїРµСЂРµС…РѕРґС‹ РІ Р±РѕСЂРµ
+		int patternNum[40]; // РЅРѕРјРµСЂ РїР°С‚С‚РµСЂРЅР°
+		int suffixLink;// СЃСѓС„С„РёРєСЃРЅР°СЏ СЃСЃС‹Р»РєР°
+		int charrLink[5]; // РїРµСЂРµС…РѕРґС‹ РІ Р°РІС‚РѕРјР°С‚Рµ
+		int parentIndex; // РёРЅРґРµРєСЃ РІРµСЂС€РёРЅС‹ СЂРѕРґРёС‚РµР»СЏ
+		int compressedLink; // РїРµСЂРµС…РѕРґ РїРѕ РєРѕРЅРµС‡РЅРѕР№ СЃСЃС‹Р»РєРµ
+		bool terminal; // СЏРІР»СЏРµС‚СЃСЏ Р»Рё РІРµСЂС€РёРЅР° РєРѕРЅРµС‡РЅРѕР№
+		char charr; // СЃРёРјРІРѕР» РїРµСЂРµС…РѕРґР° РѕС‚ СЂРѕРґРёС‚РµР»СЏ
 	};
 
-	vector <BohrPoint> bohr; // бор
-	string text; // строка поиска
-	string patternStr; // строка c паттерном
-	vector <string> patterns; // вектор хранения подстрок - паттернов
-	vector <int> patternPos; // вектор хранения индексов паттернов
-	vector<Numbers> num; // вектор хранния найденных паттернов
+	vector <BohrPoint> bohr; // Р±РѕСЂ
+	string text; // СЃС‚СЂРѕРєР° РїРѕРёСЃРєР°
+	string patternStr; // СЃС‚СЂРѕРєР° c РїР°С‚С‚РµСЂРЅРѕРј
+	vector <string> patterns; // РІРµРєС‚РѕСЂ С…СЂР°РЅРµРЅРёСЏ РїРѕРґСЃС‚СЂРѕРє - РїР°С‚С‚РµСЂРЅРѕРІ
+	vector <int> patternPos; // РІРµРєС‚РѕСЂ С…СЂР°РЅРµРЅРёСЏ РёРЅРґРµРєСЃРѕРІ РїР°С‚С‚РµСЂРЅРѕРІ
+	vector<Numbers> num; // РІРµРєС‚РѕСЂ С…СЂР°РЅРЅРёСЏ РЅР°Р№РґРµРЅРЅС‹С… РїР°С‚С‚РµСЂРЅРѕРІ
 
 public:
-	Bohr() // создание бора
+	void init() // СЃРѕР·РґР°РЅРёРµ Р±РѕСЂР°
 	{
 		cout << "Creating bohr\n";
 		bohr.push_back(createPoint(-1, -1));
@@ -56,17 +56,23 @@ public:
 				cout << "\n-----\nNew pattern - " << pat << endl;
 				cout << "Add symbols of new pattern in prefix tree\n";
 				patterns.push_back(pat);
-				addString(pat); // добавляем паттерн в бор
+				addString(pat); // РґРѕР±Р°РІР»СЏРµРј РїР°С‚С‚РµСЂРЅ РІ Р±РѕСЂ
 			}
 		}
 	}
 
-	BohrPoint createPoint(int p, char c) // функция для создания вершины в боре
+	BohrPoint createPoint(int p, char c) // С„СѓРЅРєС†РёСЏ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РІРµСЂС€РёРЅС‹ РІ Р±РѕСЂРµ
 	{
 		BohrPoint v;
-		memset(v.directLinks, -1, sizeof(v.directLinks));
-		memset(v.charrLink, -1, sizeof(v.charrLink));
-		memset(v.patternNum, -1, sizeof(v.patternNum));
+		for (int i = 0; i < 40; i++)
+		{
+			if (i < 5)
+			{
+				v.directLinks[i] = -1;
+				v.charrLink[i] = -1;
+			}
+			v.patternNum[i] = -1;
+		}
 		v.terminal = false;
 		v.suffixLink = -1;
 		v.parentIndex = p;
@@ -75,14 +81,14 @@ public:
 		return v;
 	}
 
-	void addString(string& s) // функция для добавления паттерна
+	void addString(string& s) // С„СѓРЅРєС†РёСЏ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ РїР°С‚С‚РµСЂРЅР°
 	{
 		int index = 0;
 		for (int i = 0; i < s.size(); i++)
 		{
 			cout << "\nReceived character " << s[i] << endl;
 			char ch = alphabet.find(s[i]);
-			if (bohr[index].directLinks[ch] == -1) // если такого состояния в боре нет, то добавляем новое
+			if (bohr[index].directLinks[ch] == -1) // РµСЃР»Рё С‚Р°РєРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ РІ Р±РѕСЂРµ РЅРµС‚, С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РЅРѕРІРѕРµ
 			{
 				cout << "Such way not found, adding new point with number " << bohr.size() << endl;
 				bohr.push_back(createPoint(index, ch));
@@ -96,18 +102,18 @@ public:
 		{
 			if (bohr[index].patternNum[i] == -1)
 			{
-				bohr[index].patternNum[i] = patterns.size() - 1; // запоминаем номер паттерна
+				bohr[index].patternNum[i] = patterns.size() - 1; // Р·Р°РїРѕРјРёРЅР°РµРј РЅРѕРјРµСЂ РїР°С‚С‚РµСЂРЅР°
 				break;
 			}
 		}
 	}
 
-	int getSuffixLink(int point) // функция для получения суффиксной ссылки
+	int getSuffixLink(int point) // С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ СЃСѓС„С„РёРєСЃРЅРѕР№ СЃСЃС‹Р»РєРё
 	{
-		if (bohr[point].suffixLink == -1) // если суффиксная ссылка не существует
-			if (point == 0 || bohr[point].parentIndex == 0) // если текущая вершина - корень или если родительская вершина - корень
-				bohr[point].suffixLink = 0; // возвращаем 0
-			else // иначе ищем ссылку на нижнем уровне
+		if (bohr[point].suffixLink == -1) // РµСЃР»Рё СЃСѓС„С„РёРєСЃРЅР°СЏ СЃСЃС‹Р»РєР° РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚
+			if (point == 0 || bohr[point].parentIndex == 0) // РµСЃР»Рё С‚РµРєСѓС‰Р°СЏ РІРµСЂС€РёРЅР° - РєРѕСЂРµРЅСЊ РёР»Рё РµСЃР»Рё СЂРѕРґРёС‚РµР»СЊСЃРєР°СЏ РІРµСЂС€РёРЅР° - РєРѕСЂРµРЅСЊ
+				bohr[point].suffixLink = 0; // РІРѕР·РІСЂР°С‰Р°РµРј 0
+			else // РёРЅР°С‡Рµ РёС‰РµРј СЃСЃС‹Р»РєСѓ РЅР° РЅРёР¶РЅРµРј СѓСЂРѕРІРЅРµ
 				bohr[point].suffixLink = getLink(getSuffixLink(bohr[point].parentIndex), bohr[point].charr);
 		if (bohr.at(point).suffixLink)
 			cout << "Suffix link to point " << bohr.at(point).suffixLink << "!\n";
@@ -116,12 +122,12 @@ public:
 		return bohr.at(point).suffixLink;
 	}
 
-	int getLink(int point, char charr) // функция для получения обычной ссылки
+	int getLink(int point, char charr) // С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РѕР±С‹С‡РЅРѕР№ СЃСЃС‹Р»РєРё
 	{
-		if (bohr[point].charrLink[charr] == -1) // если ссылки нет
-			if (bohr[point].directLinks[charr] != -1) // проверяем есть ли ссылка в боре
+		if (bohr[point].charrLink[charr] == -1) // РµСЃР»Рё СЃСЃС‹Р»РєРё РЅРµС‚
+			if (bohr[point].directLinks[charr] != -1) // РїСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё СЃСЃС‹Р»РєР° РІ Р±РѕСЂРµ
 				bohr[point].charrLink[charr] = bohr[point].directLinks[charr];
-			else // пробуем найти суффиксную ссылку
+			else // РїСЂРѕР±СѓРµРј РЅР°Р№С‚Рё СЃСѓС„С„РёРєСЃРЅСѓСЋ СЃСЃС‹Р»РєСѓ
 			{
 				if (point == 0)
 					bohr[point].charrLink[charr] = 0;
@@ -133,18 +139,18 @@ public:
 		return bohr.at(point).charrLink[charr];
 	}
 
-	int getCompressedLink(int point) // функция для получения конечной ссылки
+	int getCompressedLink(int point) // С„СѓРЅРєС†РёСЏ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РєРѕРЅРµС‡РЅРѕР№ СЃСЃС‹Р»РєРё
 	{
-		if (bohr[point].compressedLink == -1) // если конечной ссылки нет
+		if (bohr[point].compressedLink == -1) // РµСЃР»Рё РєРѕРЅРµС‡РЅРѕР№ СЃСЃС‹Р»РєРё РЅРµС‚
 		{
 			int curr = getSuffixLink(point);
 			if (curr == 0)
 				bohr[point].compressedLink = 0;
 			else
 			{
-				if (bohr[curr].terminal) // если суффиксная ссылка указывает на конечную вершину
-					bohr[point].compressedLink = curr; // возвращаем конечную ссылку на конечную вершину
-				else // иначе пробуем запустить функцию для найденной вершины
+				if (bohr[curr].terminal) // РµСЃР»Рё СЃСѓС„С„РёРєСЃРЅР°СЏ СЃСЃС‹Р»РєР° СѓРєР°Р·С‹РІР°РµС‚ РЅР° РєРѕРЅРµС‡РЅСѓСЋ РІРµСЂС€РёРЅСѓ
+					bohr[point].compressedLink = curr; // РІРѕР·РІСЂР°С‰Р°РµРј РєРѕРЅРµС‡РЅСѓСЋ СЃСЃС‹Р»РєСѓ РЅР° РєРѕРЅРµС‡РЅСѓСЋ РІРµСЂС€РёРЅСѓ
+				else // РёРЅР°С‡Рµ РїСЂРѕР±СѓРµРј Р·Р°РїСѓСЃС‚РёС‚СЊ С„СѓРЅРєС†РёСЋ РґР»СЏ РЅР°Р№РґРµРЅРЅРѕР№ РІРµСЂС€РёРЅС‹
 					bohr[point].compressedLink = getCompressedLink(curr);
 			}
 		}
@@ -155,20 +161,20 @@ public:
 		return bohr.at(point).compressedLink;
 	}
 
-	void find(int v, int i) // функция для проверки терминальности текущей вершины и запуска поиска конечных ссылок
+	void find(int v, int i) // С„СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё С‚РµСЂРјРёРЅР°Р»СЊРЅРѕСЃС‚Рё С‚РµРєСѓС‰РµР№ РІРµСЂС€РёРЅС‹ Рё Р·Р°РїСѓСЃРєР° РїРѕРёСЃРєР° РєРѕРЅРµС‡РЅС‹С… СЃСЃС‹Р»РѕРє
 	{
 		struct Numbers s;
 		for (int u(v); u != 0; u = getCompressedLink(u))
 		{
-			if (bohr[u].terminal) // если найдена конечная вершина
+			if (bohr[u].terminal) // РµСЃР»Рё РЅР°Р№РґРµРЅР° РєРѕРЅРµС‡РЅР°СЏ РІРµСЂС€РёРЅР°
 			{
 				cout << "Terminal point was found!" << endl;
 				for (int j(0); j < 40; j++)
 				{
 					if (bohr[u].patternNum[j] != -1)
 					{
-						s.index = i - patterns[bohr[u].patternNum[j]].size(); // запоминаем индекс в строке
-						s.patternNum = bohr[u].patternNum[j]; // запоминаем номер паттерна
+						s.index = i - patterns[bohr[u].patternNum[j]].size(); // Р·Р°РїРѕРјРёРЅР°РµРј РёРЅРґРµРєСЃ РІ СЃС‚СЂРѕРєРµ
+						s.patternNum = bohr[u].patternNum[j]; // Р·Р°РїРѕРјРёРЅР°РµРј РЅРѕРјРµСЂ РїР°С‚С‚РµСЂРЅР°
 						num.push_back(s);
 						cout << "\n-----\nPattern was found in index " << s.index << ". Pattern number - " << s.patternNum << "\n-----\n\n";
 					}
@@ -179,11 +185,11 @@ public:
 		}
 	}
 
-	void AHO() // запуск алгоритма Ахо-Корасик
+	void AHO() // Р·Р°РїСѓСЃРє Р°Р»РіРѕСЂРёС‚РјР° РђС…Рѕ-РљРѕСЂР°СЃРёРє
 	{
 		cout << "\n-----\nSearching patterns in text \n\n";
 		int u = 0;
-		for (int i(0); i < text.size(); i++) // перебор всех символов текста
+		for (int i(0); i < text.size(); i++) // РїРµСЂРµР±РѕСЂ РІСЃРµС… СЃРёРјРІРѕР»РѕРІ С‚РµРєСЃС‚Р°
 		{
 			cout << "-----\nNew char: " << text.at(i) << endl << endl;
 			u = getLink(u, alphabet.find(text[i]));
@@ -191,7 +197,7 @@ public:
 		}
 	}
 
-	void print() // вывод результатов
+	void print() // РІС‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚РѕРІ
 	{
 		cout << "\n\n-----\nAnalysing found patterns\n";
 		vector <int> c(text.size(), 0);
@@ -237,7 +243,7 @@ public:
 		}
 		cout << "Points number: " << bohr.size() << endl;
 		if (flag) cout << "No adjusting patterns!\n";
-		printBohr(); // вывод автомата
+		printBohr(); // РІС‹РІРѕРґ Р°РІС‚РѕРјР°С‚Р°
 
 	}
 
@@ -258,6 +264,7 @@ int main()
 {
 
 	Bohr obj;
+	obj.init();
 	obj.AHO();
 	obj.print();
 	return 0;
