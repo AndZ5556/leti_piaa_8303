@@ -4,11 +4,10 @@
 #include <vector>
 #include <string>
 
-using namespace std;
 class Bohr
 {
 private:
-	string alphabet = "ACGTN";
+	std::string alphabet = "ACGTN";
 
 	struct Numbers
 	{
@@ -28,23 +27,23 @@ private:
 		char charr; // символ перехода от родителя
 	};
 
-	vector <BohrPoint> bohr; // бор
-	string text; // строка поиска
-	string patternStr; // строка c паттерном
-	vector <string> patterns; // вектор хранения подстрок - паттернов
-	vector <int> patternPos; // вектор хранения индексов паттернов
-	vector<Numbers> num; // вектор хранния найденных паттернов
+	std::vector <BohrPoint> bohr; // бор
+	std::string text; // строка поиска
+	std::string patternStr; // строка c паттерном
+	std::vector <std::string> patterns; // вектор хранения подстрок - паттернов
+	std::vector <int> patternPos; // вектор хранения индексов паттернов
+	std::vector<Numbers> num; // вектор хранния найденных паттернов
 
 public:
 	void init() // создание бора
 	{
-		cout << "Creating bohr\n";
+		std::cout << "Creating bohr\n";
 		bohr.push_back(createPoint(-1, -1));
 		char joker;
-		cin >> text >> patternStr >> joker;
+		std::cin >> text >> patternStr >> joker;
 		for (int i = 0; i < patternStr.size(); i++)
 		{
-			string pat;
+			std::string pat;
 			if (patternStr[i] != joker)
 			{
 				patternPos.push_back(i + 1);
@@ -53,8 +52,8 @@ public:
 					pat += patternStr[j];
 					i++;
 				}
-				cout << "\n-----\nNew pattern - " << pat << endl;
-				cout << "Add symbols of new pattern in prefix tree\n";
+				std::cout << "\n-----\nNew pattern - " << pat << std::endl;
+				std::cout << "Add symbols of new pattern in prefix tree\n";
 				patterns.push_back(pat);
 				addString(pat); // добавляем паттерн в бор
 			}
@@ -81,21 +80,21 @@ public:
 		return v;
 	}
 
-	void addString(string& s) // функция для добавления паттерна
+	void addString(std::string& s) // функция для добавления паттерна
 	{
 		int index = 0;
 		for (int i = 0; i < s.size(); i++)
 		{
-			cout << "\nReceived character " << s[i] << endl;
+			std::cout << "\nReceived character " << s[i] << std::endl;
 			char ch = alphabet.find(s[i]);
 			if (bohr[index].directLinks[ch] == -1) // если такого состояния в боре нет, то добавляем новое
 			{
-				cout << "Such way not found, adding new point with number " << bohr.size() << endl;
+				std::cout << "Such way not found, adding new point with number " << bohr.size() << std::endl;
 				bohr.push_back(createPoint(index, ch));
 				bohr[index].directLinks[ch] = bohr.size() - 1;
 			}
 			index = bohr[index].directLinks[ch];
-			cout << "Switching to point - " << index << "\n";
+			std::cout << "Switching to point - " << index << "\n";
 		}
 		bohr[index].terminal = true;
 		for (int i = 0; i < 40; i++)
@@ -116,9 +115,9 @@ public:
 			else // иначе ищем ссылку на нижнем уровне
 				bohr[point].suffixLink = getLink(getSuffixLink(bohr[point].parentIndex), bohr[point].charr);
 		if (bohr.at(point).suffixLink)
-			cout << "Suffix link to point " << bohr.at(point).suffixLink << "!\n";
+			std::cout << "Suffix link to point " << bohr.at(point).suffixLink << "!\n";
 		else
-			cout << "Suffix link not found\n";
+			std::cout << "Suffix link not found\n";
 		return bohr.at(point).suffixLink;
 	}
 
@@ -135,7 +134,7 @@ public:
 					bohr[point].charrLink[charr] = getLink(getSuffixLink(point), charr);
 			}
 
-		cout << "link to point " << bohr.at(point).charrLink[charr] << " by char " << alphabet[charr] << endl;
+		std::cout << "link to point " << bohr.at(point).charrLink[charr] << " by char " << alphabet[charr] << std::endl;
 		return bohr.at(point).charrLink[charr];
 	}
 
@@ -155,9 +154,9 @@ public:
 			}
 		}
 		if (bohr.at(point).compressedLink)
-			cout << "Compressed link to point " << bohr.at(point).compressedLink << "!\n";
+			std::cout << "Compressed link to point " << bohr.at(point).compressedLink << "!\n";
 		else
-			cout << "Compressed link not found" << endl;
+			std::cout << "Compressed link not found" << std::endl;
 		return bohr.at(point).compressedLink;
 	}
 
@@ -168,7 +167,7 @@ public:
 		{
 			if (bohr[u].terminal) // если найдена конечная вершина
 			{
-				cout << "Terminal point was found!" << endl;
+				std::cout << "Terminal point was found!" << std::endl;
 				for (int j(0); j < 40; j++)
 				{
 					if (bohr[u].patternNum[j] != -1)
@@ -176,7 +175,7 @@ public:
 						s.index = i - patterns[bohr[u].patternNum[j]].size(); // запоминаем индекс в строке
 						s.patternNum = bohr[u].patternNum[j]; // запоминаем номер паттерна
 						num.push_back(s);
-						cout << "\n-----\nPattern was found in index " << s.index << ". Pattern number - " << s.patternNum << "\n-----\n\n";
+						std::cout << "\n-----\nPattern was found in index " << s.index << ". Pattern number - " << s.patternNum << "\n-----\n\n";
 					}
 					else
 						break;
@@ -187,11 +186,11 @@ public:
 
 	void AHO() // запуск алгоритма Ахо-Корасик
 	{
-		cout << "\n-----\nSearching patterns in text \n\n";
+		std::cout << "\n-----\nSearching patterns in text \n\n";
 		int u = 0;
 		for (int i(0); i < text.size(); i++) // перебор всех символов текста
 		{
-			cout << "-----\nNew char: " << text.at(i) << endl << endl;
+			std::cout << "-----\nNew char: " << text.at(i) << std::endl << std::endl;
 			u = getLink(u, alphabet.find(text[i]));
 			find(u, i + 1);
 		}
@@ -199,21 +198,21 @@ public:
 
 	void print() // вывод результатов
 	{
-		cout << "\n\n-----\nAnalysing found patterns\n";
-		vector <int> c(text.size(), 0);
+		std::cout << "\n\n-----\nAnalysing found patterns\n";
+		std::vector <int> c(text.size(), 0);
 		for (int i(0); i < num.size(); i++)
 		{
-			cout << "Current pattern - " << patterns[num[i].patternNum] << endl;
+			std::cout << "Current pattern - " << patterns[num[i].patternNum] << std::endl;
 			if (num[i].index < patternPos[num[i].patternNum] - 1)
 				continue;
 			c[num[i].index - patternPos[num[i].patternNum] + 1]++;
-			cout << "On index " << num[i].index - patternPos[num[i].patternNum] + 2 << " - coincidence " << c[num[i].index - patternPos[num[i].patternNum] + 1] << " out of " << patterns.size() << endl;
+			std::cout << "On index " << num[i].index - patternPos[num[i].patternNum] + 2 << " - coincidence " << c[num[i].index - patternPos[num[i].patternNum] + 1] << " out of " << patterns.size() << std::endl;
 			if (c[num[i].index - patternPos[num[i].patternNum] + 1] == patterns.size() &&
 				num[i].index - patternPos[num[i].patternNum] + 1 <= text.size() - patternStr.size())
-				cout << "Whole patter was found on " << num[i].index - patternPos[num[i].patternNum] + 2 << endl;
+				std::cout << "Whole patter was found on " << num[i].index - patternPos[num[i].patternNum] + 2 << std::endl;
 		}
 
-		cout << "\n-----\nVariant 2 -- Indivualization" << endl;
+		std::cout << "\n-----\nVariant 2 -- Indivualization" << std::endl;
 		bool flag = true;
 		for (int i = 0; i < num.size(); i++)
 		{
@@ -234,28 +233,28 @@ public:
 				if (i != j && num.at(a).index < num.at(b).index + patterns[num[b].patternNum].size())
 				{
 					flag = false;
-					cout << "Adjacent patterns: pattern " << num.at(b).patternNum << " and " << num.at(a).patternNum;
-					cout << ", index " << num.at(b).index << " and " << num.at(a).index << endl;
+					std::cout << "Adjacent patterns: pattern " << num.at(b).patternNum << " and " << num.at(a).patternNum;
+					std::cout << ", index " << num.at(b).index << " and " << num.at(a).index << std::endl;
 				}
 			}
 			num.erase(num.begin());
 
 		}
-		cout << "Points number: " << bohr.size() << endl;
-		if (flag) cout << "No adjusting patterns!\n";
+		std::cout << "Points number: " << bohr.size() << std::endl;
+		if (flag) std::cout << "No adjusting patterns!\n";
 		printBohr(); // вывод автомата
 
 	}
 
 	void printBohr()
 	{
-		cout << "\n-----\nMachine built during the operation of the algorithm\n\n";
+		std::cout << "\n-----\nMachine built during the operation of the algorithm\n\n";
 		for (int i = 0; i < bohr.size(); i++)
 		{
-			cout << "Point " << i << " with paths: \n";
+			std::cout << "Point " << i << " with paths: \n";
 			for (int j = 0; j < 5; j++)
 				if (bohr.at(i).charrLink[j] != -1)
-					cout << "\tPoint " << bohr.at(i).charrLink[j] << " with paht " << alphabet[j] << endl;
+					std::cout << "\tPoint " << bohr.at(i).charrLink[j] << " with paht " << alphabet[j] << std::endl;
 		}
 	}
 };
